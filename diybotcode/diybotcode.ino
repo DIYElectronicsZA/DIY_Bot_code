@@ -6,8 +6,9 @@
 
 // Define the ChipSelect pin for the led matrix (Dont use the SS or MISO pin of your Arduino!)
 // Other pins are arduino specific SPI pins (MOSI=DIN of the LEDMatrix and CLK) see https://www.arduino.cc/en/Reference/SPI
-
-
+int skip = 43
+int playpause = 44
+int backwards = 45
 //Pins for wheels and TB6612
 int STBY = 18; //standby
 
@@ -38,6 +39,10 @@ Servo servoHY;
 Servo servoHZ;
 
 void setup() {
+
+  pinMode(skip, OUTPUT);
+  pinMode(playpause, OUTPUT);
+  pinMode(backwards, OUTPUT);
 
   pinMode(STBY, OUTPUT);
 
