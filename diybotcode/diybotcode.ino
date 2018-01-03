@@ -1,14 +1,16 @@
 #include <LEDMatrixDriver.hpp>
 #include <Servo.h>
+#include <GPD2846.h>
 
 // This draw a moving sprite on your LED matrix using the hardware SPI driver Library by Bartosz Bielawski.
 // Example written 16.06.2017 by Marko Oette, www.oette.info 
 
 // Define the ChipSelect pin for the led matrix (Dont use the SS or MISO pin of your Arduino!)
 // Other pins are arduino specific SPI pins (MOSI=DIN of the LEDMatrix and CLK) see https://www.arduino.cc/en/Reference/SPI
-int skip = 43
-int playpause = 44
-int backwards = 45
+
+// pins for playing sounds
+GPD2846 mp3(43, 44, 45); // Arduino pins D2 = S1, D3 = S2, D4 = S3 on MP3 player
+
 //Pins for wheels and TB6612
 int STBY = 18; //standby
 
@@ -39,10 +41,6 @@ Servo servoHY;
 Servo servoHZ;
 
 void setup() {
-
-  pinMode(skip, OUTPUT);
-  pinMode(playpause, OUTPUT);
-  pinMode(backwards, OUTPUT);
 
   pinMode(STBY, OUTPUT);
 
@@ -120,7 +118,7 @@ byte e[8]={ B00000000,         // Fully closed eye
             B00000000,
             B00000000};
 
-byte f[8]={ B00000000,         // Fully closed eye
+byte f[8]={ B00000000,         // Triangle close eyes
             B00000000,
             B00000000,
             B00000000,
@@ -129,7 +127,7 @@ byte f[8]={ B00000000,         // Fully closed eye
             B00000000,
             B00000000};
 
-byte g[8]={ B00011000,        
+byte g[8]={ B00011000,        //start of eye roll
             B00111100,
             B01100110,
             B01100110,
@@ -193,7 +191,7 @@ byte m[8]={ B00001111,
             B00000000};
 
 
-byte n[8]={ B00111111,
+byte n[8]={ B00111111,    //end of eye roll
             B00110011,
             B00010001,
             B00011011,
@@ -209,6 +207,8 @@ const int ROLL_DELAY = 100;
 
 
 void loop() {
+  PlayHello();
+  PlayHello();
   move(1, 255, 1); //motor 1, full speed, left
   move(2, 128, 0); //motor 2, half speed, right
 
@@ -221,8 +221,10 @@ void loop() {
   servoHY.write(80);
   servoHZ.write(80);
   arm_move();
+  PlayHello();
   delay(200);
   roll_eyes();
+  PlayHello();
   servoAL.write(180);
   servoAR.write(-180);
   servoHY.write(110);
@@ -508,6 +510,41 @@ void drawSprite( byte* sprite, int x, int y, int width, int height, int seg )
     }
     mask = B10000000;
   }
+}
+
+void checkForSerialCommand(char serialCommand) {
+  switch(serialCommand) {
+    case 'f': // skip forward
+      mp3.next();  
+      break;
+    case 'd': // volume down
+      mp3.volumeDown();
+      break;
+    case 'p': // pause on or off
+      mp3.pause();  // could use mp3.play();
+      break;
+    case 'b': // skip back
+      mp3.previous();
+      break;
+    case 'u': // volume up
+      mp3.volumeUp();
+      break;
+    default:
+      break;    
+  }
+}
+
+void PlayHello() {
+  checkForSerialCommand('p');
+  delay(2000);
+  checkForSerialCommand('p');
+}
+  
+void PlayWhatever() {
+  checkForSerialCommand('p');
+  checkForSerialCommand('p');
+  delay(5000);
+  checkForSerialCommand('p');
 }
 
 
