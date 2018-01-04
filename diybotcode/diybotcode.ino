@@ -209,9 +209,10 @@ const int ROLL_DELAY = 100;
 void loop() {
   PlayHello();
   PlayHello();
-  move(1, 255, 1); //motor 1, full speed, left
-  move(2, 128, 0); //motor 2, half speed, right
-
+//  move(1, 255, 1); //motor 1, full speed, left
+//  move(2, 128, 0); //motor 2, half speed, right
+  roll_eyes();
+  PlayHello();
  delay(1000);
  stop();
   blink_eyes();
@@ -234,6 +235,8 @@ void loop() {
   servoAL.write(90);
   move(1, 255, 1); //motor 1, full speed, left
   move(2, 255, 1); //motor 2, full speed, left
+  roll_eyes();
+  PlayHello();
   
   delay(1000); //go for 1 second
   stop(); //stop
